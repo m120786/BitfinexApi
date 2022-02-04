@@ -1,7 +1,7 @@
 package com.vb.bitfinexapi.model
 
-data class SubscribeTickerRequest(
+data class SubscribeTickerModel(
     val event: String,
     val channel: String,
-    val symbol: String
+    val symbol: String,
 )

@@ -6,14 +6,11 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.json.JSONObject
 
-class WebSocketListener: WebSocketListener() {
-
+class WebSocketListener(requestObj: String): WebSocketListener() {
+    var request = requestObj
     override fun onOpen(webSocket: WebSocket, response: Response) {
-        val requestObj= JSONObject()
-        requestObj.put("event","subscribe")
-        requestObj.put("channel","ticker")
-        requestObj.put("symbol","tBTCUSD")
-        webSocket.send(requestObj.toString())
+
+        webSocket.send(request)
 //        webSocket.close(1000, null)
     }
 

@@ -12,31 +12,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.gson.Gson
-import com.vb.bitfinexapi.model.SubscribeTickerRequest
+import com.vb.bitfinexapi.model.SubscribeTickerModel
+import com.vb.bitfinexapi.repository.Repository
 import com.vb.bitfinexapi.ui.theme.BitfinexApiTheme
 import com.vb.bitfinexapi.utils.Constants
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val repository = Repository()
 
-        val gson = Gson()
-        var jsonString = gson.toJson(SubscribeTickerRequest(Constants.TICKER_EVENT, Constants.TICKER_CHANNEL, Constants.TICKER_SYMBOL))
+//        val requestObj= JSONObject()
+//        requestObj.put("event",Constants.TICKER_EVENT)
+//        requestObj.put("channel",Constants.TICKER_CHANNEL)
+//        requestObj.put("symbol",Constants.TICKER_SYMBOL)
+
+//        val gson = Gson()
+//        var jsonString = gson.toJson(SubscribeTickerModel(Constants.TICKER_EVENT, Constants.TICKER_CHANNEL, Constants.TICKER_SYMBOL))
 
 
-        val socketHttpClient = OkHttpClient.Builder()
-            .readTimeout(3, TimeUnit.SECONDS)
-            .build()
 
-        val request = Request.Builder()
-            .url("wss://api-pub.bitfinex.com/ws/2")
-            .build()
-
-        val webSocketListener = WebSocketListener()
-        val webSocket = socketHttpClient.newWebSocket(request, webSocketListener)
 
 
 
