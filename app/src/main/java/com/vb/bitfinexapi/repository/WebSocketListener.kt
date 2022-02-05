@@ -1,22 +1,26 @@
 package com.vb.bitfinexapi
 
 import android.util.Log
+import com.google.gson.Gson
+import com.vb.bitfinexapi.model.InitialServerResponseModel
+import com.vb.bitfinexapi.model.ServerHBModel
+import com.vb.bitfinexapi.model.SocketData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import okio.ByteString
 import org.json.JSONArray
 import org.json.JSONException
-import java.lang.Exception
+
 
 class WebSocketListener(requestObj: String): WebSocketListener() {
 
     val socketOutput = MutableSharedFlow<SocketData>()
     val scope = CoroutineScope(Dispatchers.IO)
     var request = requestObj
-
+    var serverStatus = 0
+    var jsonStringDefault = "[144436,[41493,9.883866339999997,41495,16.79622643,885,0.0218,41494,3186.63706814,41956,40414]]"
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         webSocket.send(request)
@@ -36,8 +40,20 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
         printLog(jsonString)
-        scope.launch {
-            socketOutput.emit(SocketData(text = jsonString))
+
+        if (serverStatus == 0) {
+            val serverStatusResultJson = Gson().fromJson(jsonString, InitialServerResponseModel::class.java)
+            serverStatus = serverStatusResultJson.platform.status
+            printLog(serverStatusResultJson.platform.status.toString())
+        }
+        if (serverStatus == 1) {
+            if (JSONArray(jsonString).getJSONArray(0).getString(2) == "hb") {
+            } else {
+                jsonStringDefault = jsonString
+                scope.launch {
+                    socketOutput.emit(SocketData(text = jsonStringDefault))
+                }
+            }
         }
     }
 
@@ -54,8 +70,3 @@ private fun printLog(txt: String) {
     Log.v("WSS", txt)
 }
 
-data class SocketData(
-    val text: String? = null,
-    val byteString: ByteString? = null,
-    val exception: Throwable? = null
-)
