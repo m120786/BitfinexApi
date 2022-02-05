@@ -1,8 +1,6 @@
 package com.vb.bitfinexapi
 
 import android.util.Log
-import com.vb.bitfinexapi.model.TickerModel
-import com.vb.bitfinexapi.model.toTickerModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -10,11 +8,11 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 import org.json.JSONArray
 import org.json.JSONException
-import java.util.concurrent.Flow
+import java.lang.Exception
 
 class WebSocketListener(requestObj: String): WebSocketListener() {
 
-    val messageChannel = MutableSharedFlow<TickerModel>()
+    val socketOutputChannel = MutableSharedFlow<SocketData>()
 
     var request = requestObj
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -28,7 +26,7 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         webSocket.close(1000, null)
-        printLog("closing")
+        socketOutputChannel.tryEmit(SocketData(exception = Exception()))
     }
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
@@ -45,11 +43,13 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-        messageChannel.tryEmit(listData.toTickerModel())
+        socketOutputChannel.tryEmit(SocketData(text = jsonString))
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         printLog("Error" + t.message)
+        socketOutputChannel.tryEmit(SocketData(exception = t))
+
     }
 
 }
@@ -58,7 +58,7 @@ private fun printLog(txt: String) {
     Log.v("WSS", txt)
 }
 
-data class SocketUpdate(
+data class SocketData(
     val text: String? = null,
     val byteString: ByteString? = null,
     val exception: Throwable? = null
