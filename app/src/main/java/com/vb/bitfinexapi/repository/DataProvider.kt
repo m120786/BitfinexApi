@@ -7,9 +7,9 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
-class Repository {
+class DataProvider {
 
-    init {
+    fun startSocket() {
         val requestObj= JSONObject()
         requestObj.put("event", Constants.TICKER_EVENT)
         requestObj.put("channel",Constants.TICKER_CHANNEL)
@@ -26,4 +26,7 @@ class Repository {
         val webSocketListener = WebSocketListener(requestObj.toString())
         socketHttpClient.newWebSocket(request, webSocketListener)
     }
+
+
+
 }
