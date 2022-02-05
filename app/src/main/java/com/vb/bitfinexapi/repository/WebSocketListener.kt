@@ -56,7 +56,7 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         printLog("Error" + t.message)
         scope.launch {
-            socketOutput.emit(SocketData(exception = t))
+            socketOutput.tryEmit(SocketData(exception = t))
         }
     }
 
