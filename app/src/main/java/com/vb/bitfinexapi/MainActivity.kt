@@ -19,7 +19,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        val repository = MainRepository()
+        val tickerViewModel = TickerViewModel(repository = repository)
+        
         setContent {
             BitfinexApiTheme {
                 // A surface container using the 'background' color from the theme
@@ -27,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    CoinListView()
+                    CoinListView(tickerViewModel = tickerViewModel)
                 }
             }
         }

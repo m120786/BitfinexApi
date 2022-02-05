@@ -7,10 +7,10 @@ import androidx.compose.runtime.collectAsState
 import com.vb.bitfinexapi.repository.MainRepository
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
 
+
 @Composable
-fun CoinListView() {
-    val repository = MainRepository()
-    val tickerViewModel = TickerViewModel(repository = repository)
+fun CoinListView(tickerViewModel: TickerViewModel) {
+
 
     val data = tickerViewModel.tickerData.collectAsState(SocketData("", byteString = null, null))
 
