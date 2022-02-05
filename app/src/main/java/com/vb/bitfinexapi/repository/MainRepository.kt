@@ -1,10 +1,7 @@
 package com.vb.bitfinexapi.repository
 
-import com.vb.bitfinexapi.SocketData
 import com.vb.bitfinexapi.WebSocketListener
 import com.vb.bitfinexapi.utils.Constants
-import kotlinx.coroutines.flow.MutableSharedFlow
-import okhttp3.WebSocket
 import org.json.JSONObject
 
 class MainRepository {

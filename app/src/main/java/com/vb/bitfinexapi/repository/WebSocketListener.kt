@@ -36,18 +36,6 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
         printLog(jsonString)
-
-        val listData = ArrayList<String>()
-        try {
-            val jsonArray = JSONArray(jsonString).getJSONArray(1)
-            for (i in 0 until jsonArray.length()) {
-                val valueString: String = jsonArray.getString(i)
-                listData.add(valueString)
-                Log.e("json", "$i=$valueString")
-            }
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
         scope.launch {
             socketOutput.emit(SocketData(text = jsonString))
         }
