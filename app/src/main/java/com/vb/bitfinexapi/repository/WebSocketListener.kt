@@ -1,6 +1,7 @@
 package com.vb.bitfinexapi
 
 import android.util.Log
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -12,9 +13,11 @@ import java.lang.Exception
 
 class WebSocketListener(requestObj: String): WebSocketListener() {
 
-    val socketOutputChannel = MutableSharedFlow<SocketData>()
-
+    val socketOutput = MutableSharedFlow<SocketData>()
+    val scope = CoroutineScope(Dispatchers.IO)
     var request = requestObj
+
+
     override fun onOpen(webSocket: WebSocket, response: Response) {
         webSocket.send(request)
     }
@@ -26,7 +29,9 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         webSocket.close(1000, null)
-        socketOutputChannel.tryEmit(SocketData(exception = Exception()))
+        scope.launch {
+            socketOutput.emit(SocketData(exception = Exception()))
+        }
     }
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
@@ -43,13 +48,16 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-        socketOutputChannel.tryEmit(SocketData(text = jsonString))
+        scope.launch {
+            socketOutput.emit(SocketData(text = jsonString))
+        }
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         printLog("Error" + t.message)
-        socketOutputChannel.tryEmit(SocketData(exception = t))
-
+        scope.launch {
+            socketOutput.emit(SocketData(exception = t))
+        }
     }
 
 }
