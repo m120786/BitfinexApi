@@ -1,6 +1,7 @@
 package com.vb.bitfinexapi
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,7 +26,6 @@ fun CoinListView(tickerViewModel: TickerViewModel) {
 
     val listData = ArrayList<String>()
 
-//    if (val jsonArray = JSONArray(data.value.text).length()>8)
     try {
         val jsonArray = JSONArray(data.value.text).getJSONArray(1)
         for (i in 0 until jsonArray.length()) {
@@ -37,6 +37,11 @@ fun CoinListView(tickerViewModel: TickerViewModel) {
         e.printStackTrace()
     }
     var tickerData = listData.toTickerModel()
-    Text(tickerData.bidSize)
-
+    Column() {
+        Text("Last Price : ${tickerData.lastPrice}")
+        Text("Volume : ${tickerData.volume}")
+        Text("Low : ${tickerData.low}")
+        Text("High : ${tickerData.high}")
+        Text("Daily Change : ${tickerData.dailyChange}")
+    }
 }

@@ -14,7 +14,7 @@ class TickerViewModel(val repository: MainRepository): ViewModel()  {
         collectTickerData()
     }
 
-    private fun collectTickerData() {
+    fun collectTickerData() {
         viewModelScope.launch {
             val socketTicker = repository.subscribeToTicker()
             tickerData = socketTicker.socketOutput
