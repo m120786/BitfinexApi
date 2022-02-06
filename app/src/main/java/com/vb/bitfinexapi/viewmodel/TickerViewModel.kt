@@ -37,7 +37,7 @@ class TickerViewModel(val repository: MainRepository) : ViewModel() {
                     is JSONObject -> { // HANDLE OTHER RESPONSES
                     }
                     is JSONArray -> {
-                        if (JSONArray(bookJsonString).get(1).equals("hb")) {
+                        if (JSONArray(bookJsonString).get(1).equals("hb") || JSONArray(bookJsonString).getJSONArray(1).length()>3) {
                         } else {
                             var bookTicker = JSONArray(bookJsonString).getJSONArray(1)
                             for (i in 0 until bookTicker.length()) {

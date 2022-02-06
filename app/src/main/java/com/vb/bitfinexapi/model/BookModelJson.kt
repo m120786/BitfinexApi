@@ -6,7 +6,7 @@ data class BookModelJson(
     val amount: String,
 )
 
-fun ArrayList<String>.toBookModel() = BookModelJson(
+fun ArrayList<String>.toBookModelJson() = BookModelJson(
     price = this[0],
     count = this[1],
     amount = this[2]
@@ -18,13 +18,11 @@ fun BookModelJson.toBookModel(): BookModel {
         count = count.toInt(),
         amount = amount.toDouble()
     )
-
-//    fun ArrayList<String>.toBookModel(): BookModel{
-//        BookModel
-//        price = this[0],
-//        count = this[1],
-//        amount = this[2]
-//    )
-
-
+}
+    fun ArrayList<String>.toBookModel(): BookModel {
+        return BookModel(
+        price = this[0].toInt(),
+        count = this[1].toInt(),
+        amount = this[2].toDouble()
+    )
 }
