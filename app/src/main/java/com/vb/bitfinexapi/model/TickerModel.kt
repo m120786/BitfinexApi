@@ -23,6 +23,5 @@ fun ArrayList<String>.toTickerModel() = TickerModel(
     lastPrice = this[6],
     volume = this[7],
     high = this[8],
-    low =  this[9],
-
+    low =  this[9]
 )

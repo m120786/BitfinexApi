@@ -1,19 +1,17 @@
 package com.vb.bitfinexapi
 
 import android.util.Log
-import com.google.gson.Gson
-import com.vb.bitfinexapi.model.InitialServerResponseModel
 import com.vb.bitfinexapi.model.SocketData
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import org.json.JSONArray
-import org.json.JSONObject
 
 
-class WebSocketListener(requestObj: String): WebSocketListener() {
+class WebSocketListener(requestObj: String) : WebSocketListener() {
 
     val socketOutput = MutableSharedFlow<SocketData>()
     val scope = CoroutineScope(Dispatchers.IO)
@@ -25,7 +23,6 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         printLog("Closed")
-
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -36,13 +33,12 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
     }
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
-        printLog(jsonString)
-                scope.launch {
-                    socketOutput.emit(SocketData(text = jsonString))
-                }
+        scope.launch {
+            socketOutput.emit(SocketData(text = jsonString))
+            printLog(jsonString)
+        }
 
     }
-
 
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
