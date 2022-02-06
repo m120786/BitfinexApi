@@ -9,4 +9,6 @@ package com.vb.bitfinexapi.utils
      const val BOOK_CHANNEL = "book"
      const val BOOK_PAIR = "BTCUSD"
      const val BOOK_PRECISION = "P2"
+
+     const val BOOK_SIZE = 10
 }
