@@ -10,8 +10,6 @@ import com.vb.bitfinexapi.viewmodel.TickerViewModel
 
 @Composable
 fun CoinListView(tickerViewModel: TickerViewModel) {
-
-
     val data = tickerViewModel.tickerData.collectAsState(
         TickerModel(
             bid = "0",
@@ -35,4 +33,7 @@ fun CoinListView(tickerViewModel: TickerViewModel) {
         Text("High : ${tickerData?.high}")
         Text("Daily Change : ${tickerData?.dailyChange}")
     }
+
+
+
 }
