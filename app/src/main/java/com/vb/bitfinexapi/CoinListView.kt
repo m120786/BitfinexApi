@@ -16,32 +16,26 @@ import org.json.JSONException
 fun CoinListView(tickerViewModel: TickerViewModel) {
 
 
-    val data = tickerViewModel.tickerData.collectAsState(
-        SocketData(
-            text = "[101819,[41815,10.94994413,41821,8.13565286,2224,0.0562,41815,4858.64416913,41956,39287]]",
-            byteString = null,
-            exception = null
-        )
-    )
+    val data = tickerViewModel.tickerData.collectAsState("[101819,[41815,10.94994413,41821,8.13565286,2224,0.0562,41815,4858.64416913,41956,39287]]")
 
-    val listData = ArrayList<String>()
+    val listData: ArrayList<String>? = null
 
     try {
-        val jsonArray = JSONArray(data.value.text).getJSONArray(1)
+        val jsonArray = JSONArray(data.value).getJSONArray(1)
         for (i in 0 until jsonArray.length()) {
             val valueString: String = jsonArray.getString(i)
-            listData.add(valueString)
+            listData?.add(valueString)
             Log.e("json", "$i=$valueString")
         }
     } catch (e: JSONException) {
         e.printStackTrace()
     }
-    var tickerData = listData.toTickerModel()
+    var tickerData = listData?.toTickerModel()
     Column() {
-        Text("Last Price : ${tickerData.lastPrice}")
-        Text("Volume : ${tickerData.volume}")
-        Text("Low : ${tickerData.low}")
-        Text("High : ${tickerData.high}")
-        Text("Daily Change : ${tickerData.dailyChange}")
+        Text("Last Price : ${tickerData?.lastPrice}")
+        Text("Volume : ${tickerData?.volume}")
+        Text("Low : ${tickerData?.low}")
+        Text("High : ${tickerData?.high}")
+        Text("Daily Change : ${tickerData?.dailyChange}")
     }
 }

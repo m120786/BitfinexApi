@@ -18,7 +18,6 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
     val socketOutput = MutableSharedFlow<SocketData>()
     val scope = CoroutineScope(Dispatchers.IO)
     var request = requestObj
-    var serverStatus = 0
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         webSocket.send(request)
@@ -38,17 +37,10 @@ class WebSocketListener(requestObj: String): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
         printLog(jsonString)
-        if (jsonString.startsWith("{") && JSONObject(jsonString).getString("event") == "info") {
-            serverStatus =
-                Gson().fromJson(jsonString, InitialServerResponseModel::class.java).platform.status
-        }
-        if (jsonString.startsWith("[") && serverStatus == 1) {
-            if (JSONArray(jsonString).get(1) != "hb") {
                 scope.launch {
                     socketOutput.emit(SocketData(text = jsonString))
                 }
-            }
-        }
+
     }
 
 
