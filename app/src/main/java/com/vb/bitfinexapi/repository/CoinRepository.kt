@@ -14,9 +14,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
 
-class MainRepository {
+class CoinRepository(): CoinService {
 
-    fun subscribeToTicker(): Flow<TickerModel?> {
+    override fun subscribeToTicker(): Flow<TickerModel?> {
         val requestObjTicker = JSONObject()
         requestObjTicker.put("event", Constants.TICKER_SUBSCRIBE)
         requestObjTicker.put("channel", Constants.TICKER_CHANNEL)
@@ -31,7 +31,7 @@ class MainRepository {
         return tickerResult
     }
 
-    fun subscribeToBook(): Flow<BookModel?> {
+    override fun subscribeToBook(): Flow<BookModel?> {
         val requestObjBook = JSONObject()
         requestObjBook.put("event", Constants.BOOK_SUBSCRIBE)
         requestObjBook.put("channel", Constants.BOOK_CHANNEL)

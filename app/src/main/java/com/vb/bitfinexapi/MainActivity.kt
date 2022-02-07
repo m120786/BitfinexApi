@@ -5,17 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import com.vb.bitfinexapi.repository.MainRepository
+import com.vb.bitfinexapi.repository.CoinRepository
 import com.vb.bitfinexapi.repository.WebClient
 import com.vb.bitfinexapi.ui.theme.BitfinexApiTheme
 import com.vb.bitfinexapi.utils.Constants
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
-import kotlinx.coroutines.channels.ticker
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +28,8 @@ class MainActivity : ComponentActivity() {
 
 
 
-        val repository = MainRepository()
-        val tickerViewModel = TickerViewModel(repository = repository)
+        val repository = CoinRepository()
+        val tickerViewModel = TickerViewModel(coinService = repository)
         
         setContent {
             BitfinexApiTheme {
