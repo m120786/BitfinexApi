@@ -13,8 +13,7 @@ import okhttp3.WebSocketListener
 
 class WebSocketListener(requestObj: String) : WebSocketListener() {
 
-    val socketOutput = MutableSharedFlow<SocketData>()
-    val scope = CoroutineScope(Dispatchers.IO)
+    val socketOutput = MutableSharedFlow<SocketData>(replay = 1)
     var request = requestObj
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -27,25 +26,17 @@ class WebSocketListener(requestObj: String) : WebSocketListener() {
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         webSocket.close(1000, null)
-        scope.launch {
-            socketOutput.emit(SocketData(exception = Exception()))
-        }
+            socketOutput.tryEmit(SocketData(exception = Exception()))
     }
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
-        scope.launch {
-            socketOutput.emit(SocketData(text = jsonString))
-            printLog(jsonString)
-        }
-
+            socketOutput.tryEmit(SocketData(text = jsonString))
     }
 
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         printLog("Error" + t.message)
-        scope.launch {
             socketOutput.tryEmit(SocketData(exception = t))
-        }
     }
 
 }

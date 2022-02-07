@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vb.bitfinexapi.model.BookModel
 import com.vb.bitfinexapi.model.TickerModel
-import com.vb.bitfinexapi.model.toBookModel
 import com.vb.bitfinexapi.model.toTickerModel
 import com.vb.bitfinexapi.repository.MainRepository
+import com.vb.bitfinexapi.utils.Constants
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -18,8 +20,8 @@ import org.json.JSONTokener
 
 class TickerViewModel(val repository: MainRepository) : ViewModel() {
     var tickerData = MutableSharedFlow<TickerModel>()
-    var bookData = MutableSharedFlow<BookModel>()
-
+    var bookData = MutableStateFlow<List<BookModel>>(emptyList())
+    var list = mutableListOf<BookModel>()
     init {
         collectTickerData()
         collectBookData()
@@ -27,30 +29,16 @@ class TickerViewModel(val repository: MainRepository) : ViewModel() {
 
     private fun collectBookData() {
         viewModelScope.launch {
-            val socketBook = repository.subscribeToBook()
-            socketBook.socketOutput.collect { book ->
-                val bookJsonString: String? = book.text
-                var bookJson = JSONTokener(bookJsonString).nextValue()
-                val bookListData: ArrayList<String> = ArrayList()
-
-                when (bookJson) {
-                    is JSONObject -> { // HANDLE OTHER RESPONSES
-                    }
-                    is JSONArray -> {
-                        if (JSONArray(bookJsonString).get(1).equals("hb") || JSONArray(bookJsonString).getJSONArray(1).length()>3) {
-                        } else {
-                            var bookTicker = JSONArray(bookJsonString).getJSONArray(1)
-                            for (i in 0 until bookTicker.length()) {
-                                val valueString: String = bookTicker.getString(i)
-                                bookListData?.add(valueString)
-                            }
-                            bookData.emit(bookListData!!.toBookModel())
-                            Log.v("VM", bookListData.toString())
-                        }
-                    }
-                    else -> {
-                    }
+            repository.subscribeToBook().collect { book ->
+                if (book != null) {
+                    list.add(book)
                 }
+                if(list.size>9) {
+                    bookData.value = list.toImmutableList().reversed()
+                    Log.i("viewModel", list.toString())
+                    list.clear()
+                }
+
             }
         }
     }
@@ -67,7 +55,8 @@ class TickerViewModel(val repository: MainRepository) : ViewModel() {
                     is JSONObject -> { // HANDLE WHEN SERVER IS ON MAINTENANCE
                     }
                     is JSONArray -> {
-                        if (JSONArray(tickerJsonString).get(1).equals("hb")) { } else {
+                        if (JSONArray(tickerJsonString).get(1).equals("hb")) {
+                        } else {
                             var jsonTicker = JSONArray(tickerJsonString).getJSONArray(1)
                             for (i in 0 until jsonTicker.length()) {
                                 val valueString: String = jsonTicker.getString(i)

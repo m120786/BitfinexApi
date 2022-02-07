@@ -38,17 +38,9 @@ fun CoinListView(tickerViewModel: TickerViewModel) {
         )
     )
     LaunchedEffect(key1 = launch, block = {
-        tickerViewModel.bookData.collect { book ->
-            list2.add(book)
-            i += 1
-            if (i > Constants.BOOK_SIZE - 1) {
-                list2.reversed()
-                list.addAll(list2)
-                i = 0
-                list2.clear()
-            }
-            Log.v("list2", list.size.toString())
-            Log.v("list2", i.toString())
+        tickerViewModel.bookData.collect { bookList ->
+            list.addAll(bookList)
+            Log.v("list", i.toString())
         }
     })
 
