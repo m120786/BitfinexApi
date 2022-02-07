@@ -11,10 +11,9 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 
-class WebSocketListener(requestObj: String) : WebSocketListener() {
+class WebSocketListener(val request: String) : WebSocketListener() {
 
     val socketOutput = MutableSharedFlow<SocketData>(replay = 1)
-    var request = requestObj
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         webSocket.send(request)

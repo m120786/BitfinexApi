@@ -19,9 +19,6 @@ import kotlinx.coroutines.flow.collect
 fun CoinListView(tickerViewModel: TickerViewModel) {
     var launch = 1
     var list = remember { mutableStateListOf<BookModel>() }
-//    val list2 = mutableListOf<BookModelJson>()
-    var list2 = remember { mutableStateListOf<BookModel>() }
-    var i = 0
 
     val tickerData = tickerViewModel.tickerData.collectAsState(
         TickerModel(
@@ -40,7 +37,6 @@ fun CoinListView(tickerViewModel: TickerViewModel) {
     LaunchedEffect(key1 = launch, block = {
         tickerViewModel.bookData.collect { bookList ->
             list.addAll(bookList)
-            Log.v("list", i.toString())
         }
     })
 

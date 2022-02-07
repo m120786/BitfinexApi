@@ -11,13 +11,26 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.vb.bitfinexapi.repository.MainRepository
+import com.vb.bitfinexapi.repository.WebClient
 import com.vb.bitfinexapi.ui.theme.BitfinexApiTheme
+import com.vb.bitfinexapi.utils.Constants
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
 import kotlinx.coroutines.channels.ticker
+import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val requestObjBook = JSONObject()
+        requestObjBook.put("event", Constants.BOOK_SUBSCRIBE)
+        requestObjBook.put("channel", Constants.BOOK_CHANNEL)
+        requestObjBook.put("pair", Constants.BOOK_PAIR)
+        requestObjBook.put("prec", Constants.BOOK_PRECISION)
+        WebClient().startSocket(requestObjBook)
+
+
+
 
         val repository = MainRepository()
         val tickerViewModel = TickerViewModel(repository = repository)

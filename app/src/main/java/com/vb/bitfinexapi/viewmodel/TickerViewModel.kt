@@ -19,7 +19,7 @@ import org.json.JSONTokener
 
 
 class TickerViewModel(val repository: MainRepository) : ViewModel() {
-    var tickerData = MutableSharedFlow<TickerModel>()
+    var tickerData = MutableStateFlow(TickerModel("0", "0","0","0","0","0","0","0","0","0"))
     var bookData = MutableStateFlow<List<BookModel>>(emptyList())
     var list = mutableListOf<BookModel>()
     init {
@@ -35,7 +35,7 @@ class TickerViewModel(val repository: MainRepository) : ViewModel() {
                 }
                 if(list.size>9) {
                     bookData.value = list.toImmutableList().reversed()
-                    Log.i("viewModel", list.toString())
+//                    Log.i("viewModel", list.toString())
                     list.clear()
                 }
 
@@ -45,32 +45,13 @@ class TickerViewModel(val repository: MainRepository) : ViewModel() {
 
     fun collectTickerData() {
         viewModelScope.launch {
-            val socketTicker = repository.subscribeToTicker()
-            socketTicker.socketOutput.collect { tickerResponse ->
-                val tickerJsonString: String? = tickerResponse.text
-                var json = JSONTokener(tickerJsonString).nextValue()
-                val TickerList: ArrayList<String> = ArrayList()
+            repository.subscribeToTicker().collect { ticker ->
+                tickerData.value = ticker!!
+                Log.i("viewModel", ticker.toString())
 
-                when (json) {
-                    is JSONObject -> { // HANDLE WHEN SERVER IS ON MAINTENANCE
-                    }
-                    is JSONArray -> {
-                        if (JSONArray(tickerJsonString).get(1).equals("hb")) {
-                        } else {
-                            var jsonTicker = JSONArray(tickerJsonString).getJSONArray(1)
-                            for (i in 0 until jsonTicker.length()) {
-                                val valueString: String = jsonTicker.getString(i)
-                                TickerList?.add(valueString)
-                            }
-                            tickerData.emit(TickerList!!.toTickerModel())
-                            Log.v("VM", TickerList.toString())
-                        }
-                    }
-                    else -> {
-                    }
-                }
+            }
+
             }
         }
     }
-}
 
