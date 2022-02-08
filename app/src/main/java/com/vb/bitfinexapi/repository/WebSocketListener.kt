@@ -1,11 +1,8 @@
 package com.vb.bitfinexapi
 
 import android.util.Log
-import com.vb.bitfinexapi.model.SocketData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.vb.bitfinexapi.model.networkModel.SocketData
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -16,6 +13,7 @@ class WebSocketListener(val request: String) : WebSocketListener() {
     val socketOutput = MutableSharedFlow<SocketData>(replay = 1)
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
+        printLog(webSocket.toString())
         webSocket.send(request)
     }
 

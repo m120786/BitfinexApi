@@ -3,14 +3,14 @@ package com.vb.bitfinexapi.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vb.bitfinexapi.model.BookModel
-import com.vb.bitfinexapi.model.TickerModel
-import com.vb.bitfinexapi.repository.CoinRepository
+import com.vb.bitfinexapi.model.domainModel.BookModel
+import com.vb.bitfinexapi.model.domainModel.TickerModel
 import com.vb.bitfinexapi.repository.CoinService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
+
 
 
 class TickerViewModel(val coinService: CoinService) : ViewModel() {
@@ -46,4 +46,3 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
             }
         }
     }
-

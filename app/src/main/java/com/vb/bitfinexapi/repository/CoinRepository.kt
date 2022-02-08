@@ -1,12 +1,9 @@
 package com.vb.bitfinexapi.repository
 
-import android.util.Log
-import com.vb.bitfinexapi.WebSocketListener
-import com.vb.bitfinexapi.model.BookModel
-import com.vb.bitfinexapi.model.TickerModel
-import com.vb.bitfinexapi.model.toBookModel
-import com.vb.bitfinexapi.model.toTickerModel
-import com.vb.bitfinexapi.utils.Constants
+import com.vb.bitfinexapi.model.domainModel.BookModel
+import com.vb.bitfinexapi.model.domainModel.TickerModel
+import com.vb.bitfinexapi.model.domainModel.toBookModel
+import com.vb.bitfinexapi.model.domainModel.toTickerModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -18,13 +15,9 @@ class CoinRepository(val webClient: WebClient): CoinService {
 
     override fun subscribeToTicker(): Flow<TickerModel?> {
         val requestObjTicker = JSONObject()
-        requestObjTicker.put("event", Constants.TICKER_SUBSCRIBE)
-        requestObjTicker.put("channel", Constants.TICKER_CHANNEL)
-        requestObjTicker.put("symbol", Constants.TICKER_SYMBOL)
-
-        Log.v("subs", "subscribed ticker")
-
-
+        requestObjTicker.put("event", TICKER_SUBSCRIBE)
+        requestObjTicker.put("channel", TICKER_CHANNEL)
+        requestObjTicker.put("symbol", TICKER_SYMBOL)
         val connectionTicker = webClient.startSocket(requestObjTicker)
         val tickerResult = connectionTicker.socketOutput.filter {
             it.text?.startsWith("[") == true && !JSONArray(it.text).get(1).equals("hb")
@@ -36,10 +29,10 @@ class CoinRepository(val webClient: WebClient): CoinService {
 
     override fun subscribeToBook(): Flow<BookModel?> {
         val requestObjBook = JSONObject()
-        requestObjBook.put("event", Constants.BOOK_SUBSCRIBE)
-        requestObjBook.put("channel", Constants.BOOK_CHANNEL)
-        requestObjBook.put("pair", Constants.BOOK_PAIR)
-        requestObjBook.put("prec", Constants.BOOK_PRECISION)
+        requestObjBook.put("event", BOOK_SUBSCRIBE)
+        requestObjBook.put("channel", BOOK_CHANNEL)
+        requestObjBook.put("pair", BOOK_PAIR)
+        requestObjBook.put("prec", BOOK_PRECISION)
 
         val connectionBook = webClient.startSocket(requestObjBook)
         val bookResult = connectionBook.socketOutput.filter {
@@ -49,6 +42,14 @@ class CoinRepository(val webClient: WebClient): CoinService {
             data.text?.toBookModelJsonArray()?.toBookModel()
         }
         return bookResult
+    }
+
+    override fun unsubscribeTicker() {
+        TODO("Not yet implemented")
+    }
+
+    override fun unsubscribeBook() {
+        TODO("Not yet implemented")
     }
 
     fun String.toBookModelJsonArray(): ArrayList<String>? {
@@ -89,6 +90,19 @@ class CoinRepository(val webClient: WebClient): CoinService {
             }
         }
         return jsonArrayList
+    }
+
+    companion object {
+        const val TICKER_SUBSCRIBE = "subscribe"
+        const val TICKER_CHANNEL = "ticker"
+        const val TICKER_SYMBOL = "tBTCUSD"
+
+        const val BOOK_SUBSCRIBE = "subscribe"
+        const val BOOK_CHANNEL = "book"
+        const val BOOK_PAIR = "BTCUSD"
+        const val BOOK_PRECISION = "P2"
+
+        const val BOOK_SIZE = 10
     }
 }
 

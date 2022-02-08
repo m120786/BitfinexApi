@@ -1,4 +1,4 @@
-package com.vb.bitfinexapi.model
+package com.vb.bitfinexapi.model.domainModel
 
 data class TickerModel(
     val bid: String,

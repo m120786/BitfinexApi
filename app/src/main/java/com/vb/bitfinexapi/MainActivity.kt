@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -14,6 +15,7 @@ import com.vb.bitfinexapi.repository.WebClient
 import com.vb.bitfinexapi.ui.theme.BitfinexApiTheme
 import com.vb.bitfinexapi.utils.Constants
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
+import com.vb.bitfinexapi.viewmodel.ViewModelFactory
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
@@ -23,8 +25,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val tickerViewModel = TickerViewModel(coinService = repository)
-
+        val tickerViewModel: TickerViewModel by viewModels {
+            ViewModelFactory(repository)
+        }
         tickerViewModel.collectBookData()
         tickerViewModel.collectTickerData()
 
