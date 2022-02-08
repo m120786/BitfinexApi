@@ -14,18 +14,21 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
 
-class CoinRepository(): CoinService {
+class CoinRepository(val webClient: WebClient): CoinService {
 
     override fun subscribeToTicker(): Flow<TickerModel?> {
         val requestObjTicker = JSONObject()
         requestObjTicker.put("event", Constants.TICKER_SUBSCRIBE)
         requestObjTicker.put("channel", Constants.TICKER_CHANNEL)
         requestObjTicker.put("symbol", Constants.TICKER_SYMBOL)
-        val connectionTicker = WebClient().startSocket(requestObjTicker)
+
+        Log.v("subs", "subscribed ticker")
+
+
+        val connectionTicker = webClient.startSocket(requestObjTicker)
         val tickerResult = connectionTicker.socketOutput.filter {
-            it.text!!.startsWith("[") && !JSONArray(it.text).get(1).equals("hb")
+            it.text?.startsWith("[") == true && !JSONArray(it.text).get(1).equals("hb")
         }.map { data ->
-             Log.v("WSS", data.toString())
             data.text?.toTickerModelJsonArray()?.toTickerModel()
         }
         return tickerResult
@@ -37,9 +40,10 @@ class CoinRepository(): CoinService {
         requestObjBook.put("channel", Constants.BOOK_CHANNEL)
         requestObjBook.put("pair", Constants.BOOK_PAIR)
         requestObjBook.put("prec", Constants.BOOK_PRECISION)
-        val connectionBook = WebClient().startSocket(requestObjBook)
+
+        val connectionBook = webClient.startSocket(requestObjBook)
         val bookResult = connectionBook.socketOutput.filter {
-            it.text!!.startsWith("[") && !JSONArray(it.text).get(1).equals("hb")
+            it.text?.startsWith("[") == true && !JSONArray(it.text).get(1).equals("hb")
         }.map { data ->
 //            Log.v("WSS", data.toString())
             data.text?.toBookModelJsonArray()?.toBookModel()
@@ -54,9 +58,6 @@ class CoinRepository(): CoinService {
         when (json) {
             is JSONObject -> {}  // HANDLE OTHER RESPONSES
             is JSONArray -> {
-                val jsonArray = JSONArray(jsonString)
-                if (jsonArray.get(1).equals("hb")) {                   // FIX, HB ALREADY FIXED
-                } else {
                     var bookTicker = JSONArray(jsonString).getJSONArray(1)
                     if (bookTicker.length() > 9) {
                         bookTicker = bookTicker.getJSONArray(1)
@@ -65,8 +66,6 @@ class CoinRepository(): CoinService {
                         val valueString: String = bookTicker.getString(i)
                         jsonArrayList.add(valueString)
                     }
-                    Log.v("REP", jsonArrayList.toString())
-                }
             }
             else -> {}
         }

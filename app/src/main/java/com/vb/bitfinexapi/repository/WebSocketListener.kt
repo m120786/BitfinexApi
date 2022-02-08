@@ -30,6 +30,7 @@ class WebSocketListener(val request: String) : WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket, jsonString: String) {
             socketOutput.tryEmit(SocketData(text = jsonString))
+            printLog(jsonString)
     }
 
 
@@ -43,4 +44,6 @@ class WebSocketListener(val request: String) : WebSocketListener() {
 private fun printLog(txt: String) {
     Log.v("WSS", txt)
 }
+
+
 
