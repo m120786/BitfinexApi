@@ -5,12 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
+import com.vb.bitfinexapi.repository.CoinRepository
 import com.vb.bitfinexapi.repository.CoinService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
-
+import org.json.JSONObject
 
 
 class TickerViewModel(val coinService: CoinService) : ViewModel() {
@@ -18,7 +19,10 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
     var bookData = MutableStateFlow<List<BookModel>>(emptyList())
     var list = mutableListOf<BookModel>()
 
+
+
     fun collectBookData() {
+
         viewModelScope.launch {
             coinService.subscribeToBook().collect { book ->
                 if (book != null) {
