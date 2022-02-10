@@ -1,5 +1,6 @@
 package com.vb.bitfinexapi
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,13 +9,15 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import com.vb.bitfinexapi.connection.ConnectionState
+import com.vb.bitfinexapi.connection.NetworkConnection
 import com.vb.bitfinexapi.repository.CoinRepository
 import com.vb.bitfinexapi.repository.WebClient
 import com.vb.bitfinexapi.ui.theme.BitfinexApiTheme
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
 import com.vb.bitfinexapi.viewmodel.ViewModelFactory
-import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
     val webClient = WebClient()
@@ -22,13 +25,14 @@ class MainActivity : ComponentActivity() {
     val tickerViewModel: TickerViewModel by viewModels {
         ViewModelFactory(repository)
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        tickerViewModel.collectBookData()
-        tickerViewModel.collectTickerData()
-
+        val context: Context = baseContext
+        val internetConnection = NetworkConnection(context)
+        internetConnection.registerForConnectionState()                 //registers for network connection state
 
         setContent {
             BitfinexApiTheme {
@@ -36,6 +40,20 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                   val state = internetConnection.connectionState.collectAsState()
+                    when(state.value) {
+                        ConnectionState.Available ->  {
+                            observeData()
+                            Log.i("Main", "send update available")
+                        }
+                        ConnectionState.Unavailable -> closeSocket()
+                        ConnectionState.Reconnecting -> {
+                            closeSocket()
+                            observeData()
+                            Log.i("Main", "send update reconnecting")
+
+                        }
+                    }
                     CoinListView(tickerViewModel = tickerViewModel)
                 }
             }
@@ -45,8 +63,25 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         Log.i("Main", "on Pause called")
-//        webClient.stopSocket()
+        webClient.stopSocket()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("Main", "on Resume called")
+        observeData()
+
+    }
+
+
+    fun observeData() {
+            tickerViewModel.collectBookData()
+            tickerViewModel.collectTickerData()
+
+    }
+    fun closeSocket() {
+        webClient.stopSocket()
     }
 }
 

@@ -28,7 +28,8 @@ class WebClient() {
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 super.onFailure(webSocket, t, response)
                 socketOutput.tryEmit(SocketData(exception = t))
-
+                Log.i("Main", "OnFailure" + response.toString())
+                Log.i("Main", "OnFailure" + t.toString())
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -41,35 +42,41 @@ class WebClient() {
 
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 super.onOpen(webSocket, response)
+                Log.i("Main", "Open socket" + response.toString())
 
             }
         }
     private val socketHttpClient = OkHttpClient.Builder()
-        .readTimeout(3, TimeUnit.SECONDS)
+        .readTimeout(5, TimeUnit.SECONDS)
         .build()
 
     private val request = Request.Builder()
             .url("wss://api-pub.bitfinex.com/ws/2")
             .build()
 
-    var webSocketLocal = socketHttpClient.newWebSocket(request, webSocketListener2)
-
+        var webSocketLocal: WebSocket? = socketHttpClient.newWebSocket(request, webSocketListener2)
 
     fun startSocket(requestObj: JSONObject) {
-            webSocketLocal?.send(requestObj.toString())
-              Log.i("start", webSocketLocal.toString())
-
+            if (webSocketLocal == null) {
+                webSocketLocal = socketHttpClient.newWebSocket(request, webSocketListener2)
+                webSocketLocal?.send(requestObj.toString())
+                Log.i("Main", webSocketLocal.toString())
+            } else {
+                webSocketLocal?.send(requestObj.toString())
+                Log.i("Main", requestObj.toString())
+                Log.i("Main", webSocketLocal.toString())
+            }
     }
 
     fun stopSocket() {
-        webSocketLocal?.close(1000, "close")
+        if (webSocketLocal != null) {
+            webSocketLocal?.close(1000, "close")
+            webSocketLocal = null
+        }
+        Log.i("Main", "websocket closed")
+
     }
 
  }
-
-//        fun sendMessage() {
-//            webSocketListener2.onMessage()
-//            // atsidaryti, laukti, kaupti kažkur message'us, kaupti kažkur duomenis kai atsidarys, kaupti duomenis list'e
-//        }
 
 
