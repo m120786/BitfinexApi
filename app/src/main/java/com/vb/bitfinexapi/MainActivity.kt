@@ -19,15 +19,16 @@ import org.json.JSONObject
 class MainActivity : ComponentActivity() {
     val webClient = WebClient()
     val repository = CoinRepository(webClient)
-
+    val tickerViewModel: TickerViewModel by viewModels {
+        ViewModelFactory(repository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val tickerViewModel: TickerViewModel by viewModels {
-            ViewModelFactory(repository)
-        }
+
         tickerViewModel.collectBookData()
         tickerViewModel.collectTickerData()
+
 
         setContent {
             BitfinexApiTheme {
@@ -43,11 +44,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
-
-
-
         Log.i("Main", "on Pause called")
-        webClient.stopSocket()
+//        webClient.stopSocket()
 
     }
 }

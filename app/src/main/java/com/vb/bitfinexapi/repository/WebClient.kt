@@ -1,35 +1,75 @@
 package com.vb.bitfinexapi.repository
 
-import com.vb.bitfinexapi.WebSocketListener
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.WebSocket
+import android.util.Log
+import com.vb.bitfinexapi.model.networkModel.SocketData
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import okhttp3.*
+import okio.ByteString
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
+
 class WebClient() {
 
-//    private var webSocketListenerLocal: WebSocketListener? = null
-    companion object {
-        private val socketHttpClient = OkHttpClient.Builder()
-            .readTimeout(3, TimeUnit.SECONDS)
-            .build()
-         private var webSocketLocal: WebSocket? = null
+    val socketOutput = MutableSharedFlow<SocketData>(1, extraBufferCapacity = 100, BufferOverflow.DROP_OLDEST)
 
-}
-   private val request = Request.Builder()
-        .url("wss://api-pub.bitfinex.com/ws/2")
+        private val webSocketListener2: WebSocketListener = object : WebSocketListener() {
+
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                super.onClosed(webSocket, code, reason)
+            }
+
+            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                super.onClosing(webSocket, code, reason)
+                webSocket.close(1000, null)
+            }
+
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                super.onFailure(webSocket, t, response)
+                socketOutput.tryEmit(SocketData(exception = t))
+
+            }
+
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                super.onMessage(webSocket, text)
+                socketOutput.tryEmit(SocketData(text = text))
+                Log.i("webClient", text)
+
+
+            }
+
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                super.onOpen(webSocket, response)
+
+            }
+        }
+    private val socketHttpClient = OkHttpClient.Builder()
+        .readTimeout(3, TimeUnit.SECONDS)
         .build()
 
-    fun startSocket(requestObj: JSONObject): WebSocketListener {
-        val webSocketListener = WebSocketListener(requestObj.toString())
-        webSocketLocal = socketHttpClient.newWebSocket(request, webSocketListener)
-        return webSocketListener
+    private val request = Request.Builder()
+            .url("wss://api-pub.bitfinex.com/ws/2")
+            .build()
+
+    var webSocketLocal = socketHttpClient.newWebSocket(request, webSocketListener2)
+
+
+    fun startSocket(requestObj: JSONObject) {
+            webSocketLocal?.send(requestObj.toString())
+              Log.i("start", webSocketLocal.toString())
+
     }
+
     fun stopSocket() {
         webSocketLocal?.close(1000, "close")
     }
 
+ }
 
-    }
+//        fun sendMessage() {
+//            webSocketListener2.onMessage()
+//            // atsidaryti, laukti, kaupti kažkur message'us, kaupti kažkur duomenis kai atsidarys, kaupti duomenis list'e
+//        }
+
 

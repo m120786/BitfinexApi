@@ -12,20 +12,20 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class InternetConnection(context: Context) {
-    val connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Available)
-
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork = connectivityManager.activeNetwork
-
-    val networkRequest = NetworkRequest.Builder()
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .build()
-    val callback =
-
-
-
-    fun getConnectionState(): Flow<Boolean> {
-
-    }
+//    val connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Available)
+//
+//    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//    val activeNetwork = connectivityManager.activeNetwork
+//
+//    val networkRequest = NetworkRequest.Builder()
+//        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//        .build()
+//    val callback =
+//
+//
+//
+//    fun getConnectionState(): Flow<Boolean> {
+//
+//    }
 
 }

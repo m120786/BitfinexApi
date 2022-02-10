@@ -1,5 +1,6 @@
 package com.vb.bitfinexapi.repository
 
+import android.util.Log
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
 import com.vb.bitfinexapi.model.domainModel.toBookModel
@@ -13,32 +14,22 @@ import org.json.JSONTokener
 
 class CoinRepository(val webClient: WebClient): CoinService {
 
-    override fun subscribeToTicker(): Flow<TickerModel?> {
-        val requestObjTicker = JSONObject()
-        requestObjTicker.put("event", TICKER_SUBSCRIBE)
-        requestObjTicker.put("channel", TICKER_CHANNEL)
-        requestObjTicker.put("symbol", TICKER_SYMBOL)
-        val connectionTicker = webClient.startSocket(requestObjTicker)
-        val tickerResult = connectionTicker.socketOutput.filter {
-            it.text?.startsWith("[") == true && !JSONArray(it.text).get(1).equals("hb")
+    override fun subscribeToTicker(requestObjTicker: JSONObject): Flow<TickerModel?> {
+        webClient.startSocket(requestObjTicker)
+        val tickerResult = webClient.socketOutput.filter { socketText ->
+            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()>3 &&
+                    JSONArray(socketText.text).getJSONArray(1).length()<11
         }.map { data ->
             data.text?.toTickerModelJsonArray()?.toTickerModel()
         }
         return tickerResult
     }
 
-    override fun subscribeToBook(): Flow<BookModel?> {
-        val requestObjBook = JSONObject()
-        requestObjBook.put("event", BOOK_SUBSCRIBE)
-        requestObjBook.put("channel", BOOK_CHANNEL)
-        requestObjBook.put("pair", BOOK_PAIR)
-        requestObjBook.put("prec", BOOK_PRECISION)
-
-        val connectionBook = webClient.startSocket(requestObjBook)
-        val bookResult = connectionBook.socketOutput.filter {
-            it.text?.startsWith("[") == true && !JSONArray(it.text).get(1).equals("hb")
+    override fun subscribeToBook(requestObjBook: JSONObject): Flow<BookModel?> {
+        webClient.startSocket(requestObjBook)
+        val bookResult = webClient.socketOutput.filter { socketText->
+            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()<4
         }.map { data ->
-//            Log.v("WSS", data.toString())
             data.text?.toBookModelJsonArray()?.toBookModel()
         }
         return bookResult
@@ -92,18 +83,7 @@ class CoinRepository(val webClient: WebClient): CoinService {
         return jsonArrayList
     }
 
-    companion object {
-        const val TICKER_SUBSCRIBE = "subscribe"
-        const val TICKER_CHANNEL = "ticker"
-        const val TICKER_SYMBOL = "tBTCUSD"
 
-        const val BOOK_SUBSCRIBE = "subscribe"
-        const val BOOK_CHANNEL = "book"
-        const val BOOK_PAIR = "BTCUSD"
-        const val BOOK_PRECISION = "P2"
-
-        const val BOOK_SIZE = 10
-    }
 }
 
 

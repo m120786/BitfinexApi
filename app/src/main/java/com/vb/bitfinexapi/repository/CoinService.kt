@@ -3,10 +3,11 @@ package com.vb.bitfinexapi.repository
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
 import kotlinx.coroutines.flow.Flow
+import org.json.JSONObject
 
 interface CoinService {
-    fun subscribeToTicker(): Flow<TickerModel?>
-    fun subscribeToBook():  Flow<BookModel?>
+    fun subscribeToTicker(requestObjTicker: JSONObject): Flow<TickerModel?>
+    fun subscribeToBook(requestObjBook: JSONObject):  Flow<BookModel?>
     fun unsubscribeTicker()
     fun unsubscribeBook()
 }
