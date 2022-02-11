@@ -23,14 +23,15 @@ import org.junit.Before
 import org.junit.Test
 
 class CoinRepositoryTest {
-    private lateinit var webclient: WebClient
+    var webclient = mockk<WebClient>()
+
 //    @MockK
 //    private var webclient = WebClient()
 
-    @Before
-    fun setup() {
-        var webclient = mockk<WebClient>()
-    }
+//    @Before
+//    fun setup() {
+//        var webclient = mockk<WebClient>()
+//    }
 
 
 
@@ -42,12 +43,15 @@ class CoinRepositoryTest {
 
         val socketData = SocketData(tickerString, null, null)
             coEvery { webclient.socketOutput.take(1) } returns flowOf(socketData)
-            val result = webclient.socketOutput.take(1).filter { socketText ->
-                socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()>3 &&
-                        JSONArray(socketText.text).getJSONArray(1).length()<11
+            webclient.socketOutput.take(1).filter { socketText ->
+                socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1)
+                    .equals("hb") && JSONArray(socketText.text).getJSONArray(1).length() > 3 &&
+                        JSONArray(socketText.text).getJSONArray(1).length() < 11
             }.map { data ->
                 var result = data.text?.toTickerModelJsonArray()?.toTickerModel()
-                assertThat(tickerString2.toTickerModelJsonArray().toBookModelJson()).isEqualTo(result)
+                assertThat(tickerString2.toTickerModelJsonArray().toBookModelJson()).isEqualTo(
+                    result
+                )
             }
         }
     }
