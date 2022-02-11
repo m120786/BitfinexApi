@@ -20,9 +20,9 @@ import com.vb.bitfinexapi.viewmodel.TickerViewModel
 import com.vb.bitfinexapi.viewmodel.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
-    val webClient = WebClient()
-    val repository = CoinRepository(webClient)
-    val tickerViewModel: TickerViewModel by viewModels {
+   private val webClient = WebClient()
+    private val repository = CoinRepository(webClient)
+    private val tickerViewModel: TickerViewModel by viewModels {
         ViewModelFactory(repository)
     }
 
@@ -40,9 +40,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                   val state = internetConnection.connectionState.collectAsState()
-                    when(state.value) {
-                        ConnectionState.Available ->  {
+                    val state = internetConnection.connectionState.collectAsState()
+                    when (state.value) {
+                        ConnectionState.Available -> {
                             observeData()
                             Log.i("Main", "send update available")
                         }
@@ -75,12 +75,13 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    fun observeData() {
-            tickerViewModel.collectBookData()
-            tickerViewModel.collectTickerData()
+    private fun observeData() {
+        tickerViewModel.collectBookData()
+        tickerViewModel.collectTickerData()
 
     }
-    fun closeSocket() {
+
+    private fun closeSocket() {
         webClient.stopSocket()
     }
 }

@@ -5,10 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
-import com.vb.bitfinexapi.repository.CoinRepository
 import com.vb.bitfinexapi.repository.CoinService
-import com.vb.bitfinexapi.viewmodel.TickerViewModel.Companion.TICKER_CHANNEL
-import com.vb.bitfinexapi.viewmodel.TickerViewModel.Companion.TICKER_SUBSCRIBE
+import com.vb.bitfinexapi.viewmodel.ViewModelConstants.BOOK_CHANNEL
+import com.vb.bitfinexapi.viewmodel.ViewModelConstants.BOOK_PAIR
+import com.vb.bitfinexapi.viewmodel.ViewModelConstants.BOOK_PRECISION
+import com.vb.bitfinexapi.viewmodel.ViewModelConstants.BOOK_SUBSCRIBE
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -17,10 +18,9 @@ import org.json.JSONObject
 
 
 class TickerViewModel(val coinService: CoinService) : ViewModel() {
-    var tickerData = MutableStateFlow(TickerModel("0", "0","0","0","0","0","0","0","0","0"))
+    var tickerData = MutableStateFlow(TickerModel("0", "0", "0", "0", "0", "0", "0", "0", "0", "0"))
     var bookData = MutableStateFlow<List<BookModel>>(emptyList())
     var list = mutableListOf<BookModel>()
-
 
 
     fun collectBookData() {
@@ -34,7 +34,7 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
                 if (book != null) {
                     list.add(book)
                 }
-                if(list.size>9) {
+                if (list.size > 9) {
                     bookData.value = list.toImmutableList().reversed()
                     Log.i("viewModel", list.toString())
                     list.clear()
@@ -46,9 +46,9 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
 
     fun collectTickerData() {
         val requestObjTicker = JSONObject()
-        requestObjTicker.put("event", "subscribe")
-        requestObjTicker.put("channel", "ticker")
-        requestObjTicker.put("symbol", "tBTCUSD")
+        requestObjTicker.put("event", ViewModelConstants.TICKER_SUBSCRIBE)
+        requestObjTicker.put("channel", ViewModelConstants.TICKER_CHANNEL)
+        requestObjTicker.put("symbol", ViewModelConstants.TICKER_SYMBOL)
 
         viewModelScope.launch {
             coinService.subscribeToTicker(requestObjTicker).collect { ticker ->
@@ -58,19 +58,9 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
                 }
             }
 
-            }
         }
-    companion object {
-        const val TICKER_SUBSCRIBE = "subscribe"
-        const val TICKER_CHANNEL = "ticker"
-        const val TICKER_SYMBOL = "tBTCUSD"
-
-        const val BOOK_SUBSCRIBE = "subscribe"
-        const val BOOK_CHANNEL = "book"
-        const val BOOK_PAIR = "BTCUSD"
-        const val BOOK_PRECISION = "P2"
-
-        const val BOOK_SIZE = 10
     }
-    }
+
+
+}
 
