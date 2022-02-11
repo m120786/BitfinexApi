@@ -11,18 +11,28 @@ import kotlinx.coroutines.flow.take
 import org.json.JSONArray
 import com.google.common.truth.Truth.assertThat
 import com.vb.bitfinexapi.model.domainModel.toTickerModel
+import com.vb.bitfinexapi.viewmodel.CoinFakeRepository
+import com.vb.bitfinexapi.viewmodel.TickerViewModel
 import io.mockk.mockk
 import io.mockk.mockkClass
+import kotlinx.coroutines.test.runBlockingTest
 import org.json.JSONObject
 import org.json.JSONTokener
+import org.junit.Before
 
 import org.junit.Test
 
 class CoinRepositoryTest {
+    private lateinit var webclient: WebClient
 //    @MockK
 //    private var webclient = WebClient()
 
-    var webclient = mockk<WebClient>()
+    @Before
+    fun setup() {
+        var webclient = mockk<WebClient>()
+    }
+
+
 
 
     @Test
@@ -31,16 +41,18 @@ class CoinRepositoryTest {
         val tickerString2 = "[43103,14.551372659999997,43105,7.828219170000001,-858,-0.0195,43100,7844.81332585,45899,42672]"
 
         val socketData = SocketData(tickerString, null, null)
-        coEvery { webclient.socketOutput.take(1) } returns flowOf(socketData)
-        webclient.socketOutput.take(1).filter {  socketText ->
-            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()>3 &&
-                    JSONArray(socketText.text).getJSONArray(1).length()<11
-        }.map { data ->
-            var result = data.text?.toTickerModelJsonArray()?.toTickerModel()
-            assertThat(tickerString2.toTickerModelJsonArray().toBookModelJson()).isEqualTo(result)
+            coEvery { webclient.socketOutput.take(1) } returns flowOf(socketData)
+            val result = webclient.socketOutput.take(1).filter { socketText ->
+                socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()>3 &&
+                        JSONArray(socketText.text).getJSONArray(1).length()<11
+            }.map { data ->
+                var result = data.text?.toTickerModelJsonArray()?.toTickerModel()
+                assertThat(tickerString2.toTickerModelJsonArray().toBookModelJson()).isEqualTo(result)
+            }
         }
-
     }
+
+
     fun String.toTickerModelJsonArray(): ArrayList<String> {
         var json = JSONTokener(this).nextValue()
         val jsonArrayList: ArrayList<String> = ArrayList()
@@ -59,4 +71,3 @@ class CoinRepositoryTest {
         }
         return jsonArrayList
     }
-}
