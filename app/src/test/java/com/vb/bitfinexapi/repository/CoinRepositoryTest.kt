@@ -36,8 +36,8 @@ class CoinRepositoryTest {
             socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()>3 &&
                     JSONArray(socketText.text).getJSONArray(1).length()<11
         }.map { data ->
-            assertThat(tickerString2.toTickerModelJsonArray().toBookModelJson()).isEqualTo(data.text?.toTickerModelJsonArray()?.toTickerModel())
-
+            var result = data.text?.toTickerModelJsonArray()?.toTickerModel()
+            assertThat(tickerString2.toTickerModelJsonArray().toBookModelJson()).isEqualTo(result)
         }
 
     }
