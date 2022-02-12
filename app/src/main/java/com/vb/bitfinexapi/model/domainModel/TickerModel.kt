@@ -13,6 +13,19 @@ data class TickerModel(
     val low: String
 )
 
+//data class TickerModel(
+//    val bid: Int,
+//    val bidSize: Double,
+//    val ask: Int,
+//    val askSize: Double,
+//    val dailyChange: Int,
+//    val dailyChangeRelative: Double,
+//    val lastPrice: Int,
+//    val volume: Double,
+//    val high: Int,
+//    val low: Int
+//)
+
 fun ArrayList<String>.toTickerModel() = TickerModel(
     bid = this[0],
     bidSize = this[1],

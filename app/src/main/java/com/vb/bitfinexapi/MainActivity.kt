@@ -1,16 +1,27 @@
 package com.vb.bitfinexapi
 
+import android.R
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.findFragment
 import com.vb.bitfinexapi.connection.ConnectionState
 import com.vb.bitfinexapi.connection.NetworkConnection
 import com.vb.bitfinexapi.repository.CoinRepository
@@ -18,6 +29,7 @@ import com.vb.bitfinexapi.repository.WebClient
 import com.vb.bitfinexapi.ui.theme.BitfinexApiTheme
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
 import com.vb.bitfinexapi.viewmodel.ViewModelFactory
+
 
 class MainActivity : ComponentActivity() {
    private val webClient = WebClient()
@@ -30,8 +42,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         val context: Context = baseContext
-        val internetConnection = NetworkConnection(context)
+
+            val internetConnection = NetworkConnection(context)
         internetConnection.registerForConnectionState()                 //registers for network connection state
 
         setContent {
@@ -54,6 +69,19 @@ class MainActivity : ComponentActivity() {
 
                         }
                     }
+
+
+//                    AndroidView(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .wrapContentHeight(),
+//                        factory = {
+//                            FragmentContainerView(context).apply {
+//                                this.getFragment<>()
+//                            }
+//                        },
+
+
                     CoinListView(tickerViewModel = tickerViewModel)
                 }
             }

@@ -55,7 +55,7 @@ class CoinRepository(val webClient: WebClient): CoinService {
                         bookTicker = bookTicker.getJSONArray(1)
                     }
                     for (i in 0 until bookTicker.length()) {
-                        val valueString: String = bookTicker.getString(i)
+                        val valueString: String = bookTicker.get(i).toString()
                         jsonArrayList.add(valueString)
                     }
             }
@@ -74,7 +74,7 @@ class CoinRepository(val webClient: WebClient): CoinService {
                 var jsonTicker = JSONArray(jsonString).getJSONArray(1)
                 if (jsonTicker.length() > 3 && jsonTicker.length() < 11) {
                     for (i in 0 until jsonTicker.length()) {
-                        val valueString: String = jsonTicker.getString(i)
+                        val valueString: String = jsonTicker.get(i).toString()
                         jsonArrayList.add(valueString)
                     }
                 }
