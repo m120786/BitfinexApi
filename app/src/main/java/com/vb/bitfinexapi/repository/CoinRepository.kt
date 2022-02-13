@@ -4,7 +4,6 @@ import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
 import com.vb.bitfinexapi.model.domainModel.toBookModel
 import com.vb.bitfinexapi.model.domainModel.toTickerModel
-import com.vb.bitfinexapi.model.networkModel.SocketData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -46,7 +45,7 @@ class CoinRepository(private val webClient: WebClient) : CoinService {
     }
 
     override fun subscribeToError(): Flow<Throwable?> {
-       var exception = webClient.socketOutput.filter {
+       val exception = webClient.socketOutput.filter {
         it.exception != null
           }.map {
             it.exception

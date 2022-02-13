@@ -64,8 +64,7 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
     fun collectError() {
         viewModelScope.launch {
             coinService.subscribeToError().collect { error ->
-                if (error != null) errorData.value = true
-                else errorData.value = false
+                errorData.value = error != null
             }
         }
     }
