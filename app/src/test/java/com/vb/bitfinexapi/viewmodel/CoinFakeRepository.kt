@@ -3,6 +3,7 @@ package com.vb.bitfinexapi.viewmodel
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
 import com.vb.bitfinexapi.repository.CoinService
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 
@@ -51,6 +52,10 @@ class CoinFakeRepository : CoinService {
     }
 
     override fun unsubscribeBook() {
+        TODO("Not yet implemented")
+    }
+
+    override fun subscribeToError(): Flow<Throwable?> {
         TODO("Not yet implemented")
     }
 }

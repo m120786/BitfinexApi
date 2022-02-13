@@ -102,6 +102,7 @@ class MainActivity : ComponentActivity() {
     private fun observeData() {
         tickerViewModel.collectBookData()
         tickerViewModel.collectTickerData()
+        tickerViewModel.collectError()
 
     }
 

@@ -15,16 +15,6 @@ import org.json.JSONTokener
 import org.junit.Test
 
 class CoinRepositoryTest {
-    var webclient = mockk<WebClient>()
-
-//    @MockK
-//    private var webclient = WebClient()
-
-//    @Before
-//    fun setup() {
-//        var webclient = mockk<WebClient>()
-//    }
-
 
     @Test
     fun `subscribeToTicker() properly filters ticker data`() {

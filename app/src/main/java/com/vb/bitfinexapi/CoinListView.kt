@@ -1,5 +1,6 @@
 package com.vb.bitfinexapi
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -7,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.vb.bitfinexapi.viewmodel.TickerViewModel
@@ -16,11 +18,18 @@ import com.vb.bitfinexapi.viewmodel.TickerViewModel
 fun CoinListView(tickerViewModel: TickerViewModel) {
 
     val tickerData = tickerViewModel.tickerData.collectAsState()
-
+    val context = LocalContext.current
     val bookData = tickerViewModel.bookData.collectAsState()
+
+    val errorData = tickerViewModel.errorData.collectAsState()
+
+
 
 
     Column {
+        if (errorData.value == true) {
+            Text("Server Error")
+        }
         Column(modifier = Modifier.padding(10.dp)) {
             Text("Last Price : ${tickerData.value.lastPrice}")
             Text("Volume : ${tickerData.value.volume}")

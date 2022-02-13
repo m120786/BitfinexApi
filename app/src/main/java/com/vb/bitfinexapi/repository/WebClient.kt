@@ -11,8 +11,11 @@ import java.util.concurrent.TimeUnit
 
 class WebClient {
     private val WEB_CLIENT_TAG = "web_client"
+    private val WEB_SOCKET_TAG = "web_socket"
+    private val SERVER_URL = "wss://api-pub.bitfinex.com/ws/2"
+
     val socketOutput =
-        MutableSharedFlow<SocketData>(1, extraBufferCapacity = 100, BufferOverflow.DROP_OLDEST)
+        MutableSharedFlow<SocketData>(0, extraBufferCapacity = 100, BufferOverflow.DROP_OLDEST)
 
     private val webSocketListener2: WebSocketListener = object : WebSocketListener() {
 
@@ -37,6 +40,7 @@ class WebClient {
             super.onMessage(webSocket, text)
             socketOutput.tryEmit(SocketData(text = text))
             Log.i(WEB_CLIENT_TAG, text)
+            Log.i(WEB_SOCKET_TAG, webSocket.toString())
 
 
         }
@@ -52,7 +56,7 @@ class WebClient {
         .build()
 
     private val request = Request.Builder()
-        .url("wss://api-pub.bitfinex.com/ws/2")
+        .url(SERVER_URL)
         .build()
 
     private var webSocketLocal: WebSocket? = socketHttpClient.newWebSocket(request, webSocketListener2)
@@ -65,7 +69,7 @@ class WebClient {
         } else {
             webSocketLocal?.send(requestObj.toString())
             Log.i(WEB_CLIENT_TAG, requestObj.toString())
-            Log.i(WEB_CLIENT_TAG, webSocketLocal.toString())
+            Log.i(WEB_SOCKET_TAG, webSocketLocal.toString())
         }
     }
 
@@ -74,7 +78,7 @@ class WebClient {
             webSocketLocal?.close(1000, "close")
             webSocketLocal = null
         }
-        Log.i(WEB_CLIENT_TAG, "websocket closed")
+        Log.i(WEB_SOCKET_TAG, "websocket closed")
 
     }
 
