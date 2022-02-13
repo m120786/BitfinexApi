@@ -20,7 +20,7 @@ import org.json.JSONObject
 class TickerViewModel(val coinService: CoinService) : ViewModel() {
     var tickerData = MutableStateFlow(TickerModel("0", "0", "0", "0", "0", "0", "0", "0", "0", "0"))
     var bookData = MutableStateFlow<List<BookModel>>(emptyList())
-    var list = mutableListOf<BookModel>()
+    private var list = mutableListOf<BookModel>()
 
 
     fun collectBookData() {
@@ -53,7 +53,7 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
         viewModelScope.launch {
             coinService.subscribeToTicker(requestObjTicker).collect { ticker ->
                 if (ticker != null) {
-                    tickerData.value = ticker!!
+                    tickerData.value = ticker
                     Log.i("viewModel", ticker.toString())
                 }
             }

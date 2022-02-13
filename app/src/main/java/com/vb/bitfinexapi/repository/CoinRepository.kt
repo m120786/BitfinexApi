@@ -1,6 +1,5 @@
 package com.vb.bitfinexapi.repository
 
-import android.util.Log
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
 import com.vb.bitfinexapi.model.domainModel.toBookModel
@@ -12,13 +11,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
 
-class CoinRepository(val webClient: WebClient): CoinService {
+class CoinRepository(private val webClient: WebClient) : CoinService {
 
     override fun subscribeToTicker(requestObjTicker: JSONObject): Flow<TickerModel?> {
         webClient.startSocket(requestObjTicker)
         val tickerResult = webClient.socketOutput.filter { socketText ->
-            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()>3 &&
-                    JSONArray(socketText.text).getJSONArray(1).length()<11
+            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1)
+                .equals("hb") && JSONArray(socketText.text).getJSONArray(1).length() > 3 &&
+                    JSONArray(socketText.text).getJSONArray(1).length() < 11
         }.map { data ->
             data.text?.toTickerModelJsonArray()?.toTickerModel()
         }
@@ -27,8 +27,9 @@ class CoinRepository(val webClient: WebClient): CoinService {
 
     override fun subscribeToBook(requestObjBook: JSONObject): Flow<BookModel?> {
         webClient.startSocket(requestObjBook)
-        val bookResult = webClient.socketOutput.filter { socketText->
-            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1).equals("hb") && JSONArray(socketText.text).getJSONArray(1).length()<4
+        val bookResult = webClient.socketOutput.filter { socketText ->
+            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1)
+                .equals("hb") && JSONArray(socketText.text).getJSONArray(1).length() < 4
         }.map { data ->
             data.text?.toBookModelJsonArray()?.toBookModel()
         }
@@ -43,36 +44,36 @@ class CoinRepository(val webClient: WebClient): CoinService {
         TODO("Not yet implemented")
     }
 
-    fun String.toBookModelJsonArray(): ArrayList<String>? {
-        var json = JSONTokener(this).nextValue()
+    private fun String.toBookModelJsonArray(): ArrayList<String> {
+        val json = JSONTokener(this).nextValue()
         val jsonArrayList: ArrayList<String> = ArrayList()
-        var jsonString = this
+        val jsonString = this
         when (json) {
             is JSONObject -> {}  // HANDLE OTHER RESPONSES
             is JSONArray -> {
-                    var bookTicker = JSONArray(jsonString).getJSONArray(1)
-                    if (bookTicker.length() > 9) {
-                        bookTicker = bookTicker.getJSONArray(1)
-                    }
-                    for (i in 0 until bookTicker.length()) {
-                        val valueString: String = bookTicker.get(i).toString()
-                        jsonArrayList.add(valueString)
-                    }
+                var bookTicker = JSONArray(jsonString).getJSONArray(1)
+                if (bookTicker.length() > 9) {
+                    bookTicker = bookTicker.getJSONArray(1)
+                }
+                for (i in 0 until bookTicker.length()) {
+                    val valueString: String = bookTicker.get(i).toString()
+                    jsonArrayList.add(valueString)
+                }
             }
             else -> {}
         }
         return jsonArrayList
     }
 
-    fun String.toTickerModelJsonArray(): ArrayList<String> {
-        var json = JSONTokener(this).nextValue()
+    private fun String.toTickerModelJsonArray(): ArrayList<String> {
+        val json = JSONTokener(this).nextValue()
         val jsonArrayList: ArrayList<String> = ArrayList()
-        var jsonString = this
+        val jsonString = this
         when (json) {
             is JSONObject -> {}
             is JSONArray -> {
-                var jsonTicker = JSONArray(jsonString).getJSONArray(1)
-                if (jsonTicker.length() > 3 && jsonTicker.length() < 11) {
+                val jsonTicker = JSONArray(jsonString).getJSONArray(1)
+                if (jsonTicker.length() in 4..10) {
                     for (i in 0 until jsonTicker.length()) {
                         val valueString: String = jsonTicker.get(i).toString()
                         jsonArrayList.add(valueString)

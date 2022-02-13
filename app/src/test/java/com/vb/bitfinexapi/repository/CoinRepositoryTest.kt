@@ -27,7 +27,7 @@ class CoinRepositoryTest {
 
 
     @Test
-    fun `subscribeToTicker() properly filters the data`() {
+    fun `subscribeToTicker() properly filters ticker data`() {
         var localFlowResult: Any? = null
 
         val string1 = "[374259,[43103,14.551372659999997,43105,7.828219170000001,-858,-0.0195,43100,7844.81332585,45899,42672]]"
@@ -35,8 +35,8 @@ class CoinRepositoryTest {
 
         val result1 = string1.toTickerModelJsonArray().toTickerModel()
         val socketData1 = SocketData(string1, null, null)
-        val sockedData2 = SocketData(string2, null, null)
-        val flowText = flowOf(socketData1, sockedData2)
+        val socketData2 = SocketData(string2, null, null)
+        val flowText = flowOf(socketData2, socketData1)
 
         val flowResult = flowText.filter { socketText ->
             socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1)
