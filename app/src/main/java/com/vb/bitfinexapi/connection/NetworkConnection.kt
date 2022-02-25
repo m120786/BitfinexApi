@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class NetworkConnection(context: Context) {
 
-    val connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Unavailable)
+    val connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Available)
+
 
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -21,13 +22,15 @@ class NetworkConnection(context: Context) {
         .build()
 
     fun getCurrentState(): ConnectionState {
-        val actNetwork =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                ?: return ConnectionState.Unavailable
+        val actNetwork = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (actNetwork == null) {
+                return ConnectionState.Unavailable
+            }
         return when {
             actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionState.Available
             actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionState.Available
             else -> ConnectionState.Unavailable
+
         }
     }
 
@@ -36,13 +39,13 @@ class NetworkConnection(context: Context) {
             ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 connectionState.value = ConnectionState.Available
-                Log.e("network", "available: $network")
+                Log.e("network2", "available: $network")
             }
 
             override fun onLost(network: Network) {
                 val latest = getCurrentState()
                 Log.e(
-                    "network",
+                    "network2",
                     "lost $network"
                 )
                 when (latest) {
@@ -51,10 +54,16 @@ class NetworkConnection(context: Context) {
                     ConnectionState.Available -> connectionState.value =
                         ConnectionState.Reconnecting
                 }
+                Log.e(
+                    "network2",
+                    connectionState.value.toString()
+                )
             }
 
             override fun onUnavailable() {
                 connectionState.value = ConnectionState.Unavailable
+                Log.e("network2", "not available")
+
             }
         })
     }

@@ -1,5 +1,6 @@
 package com.vb.bitfinexapi.repository
 
+import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import com.vb.bitfinexapi.model.domainModel.toBookModel
 import com.vb.bitfinexapi.model.domainModel.toTickerModel
@@ -59,10 +60,36 @@ class CoinRepositoryTest {
             data.text?.toBookModelJsonArray()?.toBookModel()
         }
         runBlockingTest {
-            localFlowResult = flowResult.last()
+            localFlowResult = flowResult.first()
         }
         assertThat(localFlowResult).isEqualTo(result1)
     }
+
+    @Test
+    fun `subscribeToBook() returns null if none of the elements are correct`() {
+        var localFlowResult: Any? = null
+
+        val string1 =
+            "[374259,[43103,14.551372659999997,43105,7.828219170000001,-858,-0.0195,43100,7844.81332585,45899,42672]]"
+        val string2 = "[243861, hb]"
+//        val result1 = string2.toBookModelJsonArray().toBookModel()
+
+        val socketData1 = SocketData(string1, null, null)
+        val sockedData2 = SocketData(string2, null, null)
+        val flowText = flowOf(socketData1, sockedData2)
+
+        val flowResult = flowText.filter { socketText ->
+            socketText.text?.startsWith("{") == false && !JSONArray(socketText.text).get(1)
+                .equals("hb") && JSONArray(socketText.text).getJSONArray(1).length() < 4
+        }.map { data ->
+            data.text?.toBookModelJsonArray()?.toBookModel()
+        }
+        runBlockingTest {
+            localFlowResult = flowResult?.take(1)
+        }
+        assertThat(flowResult).isEqualTo(null)
+    }
+
 
 }
 

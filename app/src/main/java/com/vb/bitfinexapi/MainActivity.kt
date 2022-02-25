@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,12 +44,12 @@ class MainActivity : ComponentActivity() {
         val internetConnection = NetworkConnection(context)
         internetConnection.registerForConnectionState()                 //registers for network connection state
 
+
         setContent {
             BitfinexApiTheme {
                 Scaffold(    topBar = {
                     TopAppBar {
                         Row {
-
                         Icon(
                             painter = painterResource(id = R.drawable.ic_baseline_currency_bitcoin_24),
                             contentDescription = "play_icon",
@@ -64,6 +65,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val state = internetConnection.connectionState.collectAsState()
+
                     when (state.value) {
                         ConnectionState.Available -> {
                             observeData()
@@ -109,5 +111,6 @@ class MainActivity : ComponentActivity() {
     private fun closeSocket() {
         webClient.stopSocket()
     }
+
 }
 

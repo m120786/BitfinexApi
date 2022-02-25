@@ -27,7 +27,9 @@ fun CoinListView(tickerViewModel: TickerViewModel) {
     Column {
         if (errorData.value) {
             Text("Server Error", color = Color.Red)
-        }
+        } else {
+            Text("")
+    }
         Column(modifier = Modifier.padding(10.dp)) {
             Text("Last Price : ${tickerData.value.lastPrice}")
             Text("Volume : ${tickerData.value.volume}")

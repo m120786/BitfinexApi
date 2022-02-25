@@ -1,8 +1,11 @@
 package com.vb.bitfinexapi.viewmodel
 
+import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vb.bitfinexapi.connection.NetworkConnection
 import com.vb.bitfinexapi.model.domainModel.BookModel
 import com.vb.bitfinexapi.model.domainModel.TickerModel
 import com.vb.bitfinexapi.repository.CoinService
@@ -22,6 +25,7 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
     var bookData = MutableStateFlow<List<BookModel>>(emptyList())
     var errorData = MutableStateFlow<Boolean>(false)
     private var list = mutableListOf<BookModel>()
+
 
 
     fun collectBookData() {
@@ -68,7 +72,5 @@ class TickerViewModel(val coinService: CoinService) : ViewModel() {
             }
         }
     }
-
-
 }
 

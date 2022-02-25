@@ -42,7 +42,6 @@ class WebClient {
             Log.i(WEB_CLIENT_TAG, text)
             Log.i(WEB_SOCKET_TAG, webSocket.toString())
 
-
         }
 
         override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -81,7 +80,6 @@ class WebClient {
         Log.i(WEB_SOCKET_TAG, "websocket closed")
 
     }
-
 }
 
 

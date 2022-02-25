@@ -45,9 +45,7 @@ class CoinRepository(private val webClient: WebClient) : CoinService {
     }
 
     override fun subscribeToError(): Flow<Throwable?> {
-       val exception = webClient.socketOutput.filter {
-        it.exception != null
-          }.map {
+       val exception = webClient.socketOutput.map {
             it.exception
         }
         return exception
